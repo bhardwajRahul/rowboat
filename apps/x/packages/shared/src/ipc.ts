@@ -1210,6 +1210,45 @@ export const ipcSchemas = {
     req: z.null(),
     res: z.null(),
   },
+  // Main → renderer: native application-menu commands (apps/main/src/menu.ts).
+  // One channel for all of them; each routes into the same handler the
+  // corresponding in-app control uses. Go-menu navigation is NOT here — it
+  // rides the existing deep-link pipeline (app:openUrl / pending-link drain).
+  'menu:command': {
+    req: z.discriminatedUnion('command', [
+      z.object({ command: z.literal('new-chat') }),
+      z.object({ command: z.literal('new-note') }),
+      z.object({ command: z.literal('new-presentation') }),
+      z.object({ command: z.literal('undo') }),
+      z.object({ command: z.literal('redo') }),
+      z.object({ command: z.literal('open-search') }),
+      z.object({ command: z.literal('toggle-browser') }),
+      z.object({ command: z.literal('toggle-full-screen-chat') }),
+      z.object({ command: z.literal('go-back') }),
+      z.object({ command: z.literal('go-forward') }),
+      z.object({
+        command: z.literal('open-settings'),
+        // Mirrors the renderer's settings-dialog ConfigTab union.
+        tab: z.enum([
+          'account', 'connections', 'mobile', 'phone', 'models', 'mcp', 'security',
+          'code-mode', 'appearance', 'shortcuts', 'notifications',
+          'permissions', 'note-tagging', 'advanced', 'help',
+        ]).optional(),
+      }),
+      z.object({
+        command: z.literal('export-note'),
+        format: z.enum(['md', 'pdf', 'docx']),
+      }),
+    ]),
+    res: z.null(),
+  },
+  // Main → renderer: View > Toggle Sidebar. Its own channel because the
+  // handler must live inside the SidebarProvider, below where menu:command's
+  // dispatcher sits.
+  'menu:toggleSidebar': {
+    req: z.null(),
+    res: z.null(),
+  },
   // The ⌥/⌃+Tab section switcher, forwarded from the main process when an
   // embedded page (e.g. the browser <webview>) holds keyboard focus — its
   // keystrokes go to the guest and never reach the app renderer's listeners.
