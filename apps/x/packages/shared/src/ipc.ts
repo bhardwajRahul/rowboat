@@ -1222,6 +1222,7 @@ export const ipcSchemas = {
       z.object({ command: z.literal('undo') }),
       z.object({ command: z.literal('redo') }),
       z.object({ command: z.literal('open-search') }),
+      z.object({ command: z.literal('open-about') }),
       z.object({ command: z.literal('toggle-browser') }),
       z.object({ command: z.literal('toggle-full-screen-chat') }),
       z.object({ command: z.literal('go-back') }),

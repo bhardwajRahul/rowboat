@@ -71,6 +71,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { SettingsDialog, type ConfigTab } from "@/components/settings-dialog"
+import { AboutDialog } from "@/components/about-dialog"
 import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/sonner"
 import { UpdateCard } from "@/components/update-card"
@@ -888,6 +889,7 @@ function App() {
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set())
   const [recentWikiFiles, setRecentWikiFiles] = useState<string[]>([])
   const [isGraphOpen, setIsGraphOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const [isBrowserOpen, setIsBrowserOpen] = useState(false)
   const [isSuggestedTopicsOpen, setIsSuggestedTopicsOpen] = useState(false)
   const [isMeetingsOpen, setIsMeetingsOpen] = useState(false)
@@ -6260,6 +6262,9 @@ function App() {
         case 'open-settings':
           setMenuSettings({ open: true, tab: cmd.tab ?? 'account' })
           break
+        case 'open-about':
+          setAboutOpen(true)
+          break
         case 'export-note': {
           const path = selectedPath
           if (!path || !path.endsWith('.md')) {
@@ -7931,6 +7936,7 @@ function App() {
         onOpenChange={setRetentionSettingsOpen}
         defaultTab="advanced"
       />
+      <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
       <SettingsDialog
         open={shortcutSettingsOpen}
         onOpenChange={setShortcutSettingsOpen}

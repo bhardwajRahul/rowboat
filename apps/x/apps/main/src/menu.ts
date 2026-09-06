@@ -1,4 +1,4 @@
-import { app, dialog, Menu, shell, type BrowserWindow, type MenuItemConstructorOptions } from "electron";
+import { app, Menu, shell, type BrowserWindow, type MenuItemConstructorOptions } from "electron";
 import { WorkDir } from "@x/core/dist/config/config.js";
 import type { ipc } from "@x/shared";
 import { dispatchDeepLink } from "./deeplink.js";
@@ -54,12 +54,6 @@ let recording = false;
 
 export function installAppMenu(menuActions: MenuActions): void {
   actions = menuActions;
-  if (process.platform === "darwin") {
-    app.setAboutPanelOptions({
-      applicationName: "Rowboat",
-      applicationVersion: app.getVersion(),
-    });
-  }
   rebuildMenu();
   onQuickAskShortcutChanged(() => rebuildMenu());
   onUpdaterStatusChanged(() => rebuildMenu());
@@ -111,15 +105,7 @@ function withMainWindow(fn: (win: BrowserWindow) => void): void {
 }
 
 function showAboutDialog(): void {
-  const opts = {
-    type: "info" as const,
-    title: "About Rowboat",
-    message: `Rowboat ${app.getVersion()}`,
-    detail: `Electron ${process.versions.electron} · Chromium ${process.versions.chrome} · Node ${process.versions.node}`,
-  };
-  const win = actions?.getMainWindow();
-  if (win && !win.isDestroyed()) void dialog.showMessageBox(win, opts);
-  else void dialog.showMessageBox(opts);
+  sendCommand({ command: "open-about" });
 }
 
 /** "Check for Updates…" in the state the updater is actually in. */
@@ -178,7 +164,7 @@ function rebuildMenu(): void {
   const macAppMenu: MenuItemConstructorOptions = {
     label: app.name,
     submenu: [
-      { role: "about" },
+      { label: "About Rowboat", click: () => showAboutDialog() },
       { type: "separator" },
       settingsItem,
       updateMenuItem(),
